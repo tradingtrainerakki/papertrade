@@ -150,66 +150,74 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <script>
-// Twelve Data API — NSE Live Prices
-const API_KEY = '490ad502d5f34257aa3da9d0c0b62f4d';
-const BASE = 'https://api.twelvedata.com';
-
 const S={capital:100000,positions:[],closed:[],realised:0,side:'BUY',instr:'EQ'};
 const fmt=n=>'₹'+Math.abs(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pnlFmt=n=>(n>=0?'+':'-')+fmt(n);
 
-// Fetch live price from Twelve Data (NSE exchange)
+// Stooq API — Free, No key needed, supports NSE (.NS suffix)
 async function getPrice(sym){
-  try{
-    const url=`${BASE}/price?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`;
-    const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
-    const d=await r.json();
-    if(d.price){
-      // Also get quote for high/low/prev close
-      const q=await fetch(`${BASE}/quote?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`,{signal:AbortSignal.timeout(8000)});
-      const qd=await q.json();
-      return{
-        price:parseFloat(d.price),
-        prev:parseFloat(qd.previous_close||d.price),
-        high:parseFloat(qd.high||d.price),
-        low:parseFloat(qd.low||d.price),
-        name:qd.name||sym
+  // Stooq uses symbol.in for NSE India stocks
+  const stooqSym = sym.toLowerCase() + '.in';
+  const proxy = 'https://corsproxy.io/?';
+  const url = `https://stooq.com/q/l/?s=${stooqSym}&f=sd2t2ohlcvn&e=json`;
+  
+  try {
+    const r = await fetch(proxy + encodeURIComponent(url), {signal: AbortSignal.timeout(8000)});
+    const d = await r.json();
+    if(d.symbols && d.symbols[0] && d.symbols[0].close > 0){
+      const q = d.symbols[0];
+      return {
+        price: parseFloat(q.close),
+        prev:  parseFloat(q.open), // using open as reference
+        high:  parseFloat(q.high),
+        low:   parseFloat(q.low),
+        name:  q.name || sym
       };
     }
-    return null;
-  }catch(e){return null;}
-}
+  } catch(e){}
 
-// Batch price fetch for watchlist
-async function getPriceBatch(symbols){
-  try{
-    const symsStr=symbols.map(s=>s+':NSE').join(',');
-    const url=`${BASE}/price?symbol=${symsStr}&apikey=${API_KEY}`;
-    const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
-    const d=await r.json();
-    return d;
-  }catch(e){return {};}
+  // Fallback: Yahoo Finance via allorigins
+  try {
+    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1d&range=1d`;
+    const r2 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(yahooUrl), {signal: AbortSignal.timeout(8000)});
+    const d2 = await r2.json();
+    const data = JSON.parse(d2.contents);
+    const m = data.chart.result[0].meta;
+    return {
+      price: parseFloat(m.regularMarketPrice),
+      prev:  parseFloat(m.chartPreviousClose || m.regularMarketPrice),
+      high:  parseFloat(m.regularMarketDayHigh || m.regularMarketPrice),
+      low:   parseFloat(m.regularMarketDayLow || m.regularMarketPrice),
+      name:  sym
+    };
+  } catch(e){}
+
+  // Fallback 2: corsproxy + Yahoo
+  try {
+    const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1d&range=1d`;
+    const r3 = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl), {signal: AbortSignal.timeout(8000)});
+    const data = await r3.json();
+    const m = data.chart.result[0].meta;
+    return {
+      price: parseFloat(m.regularMarketPrice),
+      prev:  parseFloat(m.chartPreviousClose || m.regularMarketPrice),
+      high:  parseFloat(m.regularMarketDayHigh || m.regularMarketPrice),
+      low:   parseFloat(m.regularMarketDayLow || m.regularMarketPrice),
+      name:  sym
+    };
+  } catch(e){}
+
+  return null;
 }
 
 function showTab(t){
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['positions','markets','closed'][i]===t));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
-  if(t==='markets')loadWatchlist();
+  if(t==='markets') loadWatchlist();
 }
-
-function setSide(s,el){
-  S.side=s;
-  document.querySelectorAll('#side-segs .seg').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function setInstr(i,el){
-  S.instr=i;
-  document.querySelectorAll('#instr-segs .seg').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  calcTax();
-}
+function setSide(s,el){S.side=s;document.querySelectorAll('#side-segs .seg').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function setInstr(i,el){S.instr=i;document.querySelectorAll('#instr-segs .seg').forEach(b=>b.classList.remove('active'));el.classList.add('active');calcTax();}
 
 function calcTax(){
   const ep=parseFloat(document.getElementById('m-entry').value)||0;
@@ -234,17 +242,15 @@ async function fetchAndFill(){
   const sym=document.getElementById('m-sym').value.trim().toUpperCase();
   if(!sym)return;
   const st=document.getElementById('fetch-status');
-  st.textContent='⏳ NSE se live price fetch ho rahi hai...';
-  st.style.color='#7a7a8e';
+  st.textContent='⏳ NSE se live price fetch ho rahi hai...';st.style.color='#7a7a8e';
   const d=await getPrice(sym);
   if(d){
     document.getElementById('m-entry').value=d.price.toFixed(2);
     const chg=d.price-d.prev,pct=(chg/d.prev*100).toFixed(2);
-    st.textContent='✅ Live NSE: ₹'+d.price.toFixed(2)+' ('+(chg>=0?'+':'')+pct+'%)';
-    st.style.color='#22c55e';
-    calcTax();
+    st.textContent='✅ Live: ₹'+d.price.toFixed(2)+' ('+(chg>=0?'+':'')+pct+'%)';
+    st.style.color='#22c55e';calcTax();
   }else{
-    st.textContent='❌ Symbol nahi mila. Check karo: RELIANCE, TCS, INFY, SBIN';
+    st.textContent='❌ Data nahi mila. Market hours mein try karo (9:15–3:30)';
     st.style.color='#ef4444';
   }
 }
@@ -260,24 +266,22 @@ async function fetchQuote(){
     qa.innerHTML='<div class="quote-card">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div><div style="font-size:15px;font-weight:600">'+sym+'</div>'
-      +'<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+d.name+'</div>'
-      +'<div style="font-size:26px;font-weight:600;font-family:var(--mono);margin:4px 0">₹'+d.price.toFixed(2)+'</div>'
+      +'<div style="font-size:26px;font-weight:600;font-family:var(--mono);margin:6px 0">₹'+d.price.toFixed(2)+'</div>'
       +'<div style="font-size:12px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+(chg>=0?'+':'')+pct.toFixed(2)+'%)</div>'
       +'</div><button class="add-btn" onclick="prefillTrade(\''+sym+'\','+d.price+')">+ Add Trade</button></div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
       +'<div><div style="font-size:10px;color:var(--muted)">Day High</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#22c55e">₹'+d.high.toFixed(2)+'</div></div>'
       +'<div><div style="font-size:10px;color:var(--muted)">Day Low</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#ef4444">₹'+d.low.toFixed(2)+'</div></div>'
-      +'<div><div style="font-size:10px;color:var(--muted)">Prev Close</div><div style="font-size:13px;font-weight:500;font-family:var(--mono)">₹'+d.prev.toFixed(2)+'</div></div>'
       +'</div></div>';
   }else{
-    qa.innerHTML='<div style="color:#ef4444;font-size:12px;padding:4px 0">❌ Symbol nahi mila. Try: RELIANCE, TCS, INFY</div>';
+    qa.innerHTML='<div style="color:#ef4444;font-size:12px;padding:4px 0">❌ Data nahi mila. Market hours: 9:15 AM – 3:30 PM</div>';
   }
 }
 
 function prefillTrade(sym,price){
   document.getElementById('m-sym').value=sym;
   document.getElementById('m-entry').value=parseFloat(price).toFixed(2);
-  document.getElementById('fetch-status').textContent='✅ ₹'+parseFloat(price).toFixed(2)+' prefilled from NSE';
+  document.getElementById('fetch-status').textContent='✅ ₹'+parseFloat(price).toFixed(2)+' prefilled';
   document.getElementById('fetch-status').style.color='#22c55e';
   calcTax();showTab('positions');openModal();
 }
@@ -286,25 +290,11 @@ const WATCHLIST=['RELIANCE','TCS','INFY','SBIN','ICICIBANK','WIPRO','TATAMOTORS'
 
 async function loadWatchlist(){
   const el=document.getElementById('wlist');
-  el.innerHTML='<div class="empty" style="padding:20px"><p>⏳ NSE se live prices aa rahi hain...</p></div>';
-
-  // Fetch all at once using batch
-  const batch=await getPriceBatch(WATCHLIST);
-
-  // Also fetch individual quotes for prev close
-  const results=await Promise.all(WATCHLIST.map(async sym=>{
-    try{
-      const price=batch[sym+':NSE']?.price || batch[sym]?.price;
-      if(!price)return null;
-      const q=await fetch(`${BASE}/quote?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`,{signal:AbortSignal.timeout(6000)});
-      const qd=await q.json();
-      return{price:parseFloat(price),prev:parseFloat(qd.previous_close||price),high:parseFloat(qd.high||price),low:parseFloat(qd.low||price)};
-    }catch{return null;}
-  }));
-
+  el.innerHTML='<div class="empty" style="padding:20px"><p>⏳ Live prices load ho rahi hain...</p></div>';
+  const results=await Promise.all(WATCHLIST.map(s=>getPrice(s)));
   el.innerHTML=WATCHLIST.map((sym,i)=>{
     const d=results[i];
-    if(!d)return '<div class="wrow"><div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE</div></div><div style="font-size:11px;color:var(--muted)">Loading...</div><button class="add-btn" onclick="loadSingle(\''+sym+'\')">Load</button></div>';
+    if(!d)return '<div class="wrow"><div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE FnO</div></div><div style="font-size:11px;color:var(--muted)">Market band hai</div><button class="add-btn" onclick="prefillTrade(\''+sym+'\',0)">Manual</button></div>';
     const chg=d.price-d.prev,pct=(chg/d.prev*100);
     return '<div class="wrow">'
       +'<div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE FnO</div></div>'
@@ -312,11 +302,6 @@ async function loadWatchlist(){
       +'<div style="font-size:11px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+pct.toFixed(2)+'%)</div></div>'
       +'<button class="add-btn" style="margin-left:10px" onclick="prefillTrade(\''+sym+'\','+d.price+')">+</button></div>';
   }).join('');
-}
-
-async function loadSingle(sym){
-  const d=await getPrice(sym);
-  if(d)prefillTrade(sym,d.price);
 }
 
 function addTrade(){
@@ -334,10 +319,7 @@ function addTrade(){
 
 function renderPositions(){
   const el=document.getElementById('pos-list');
-  if(!S.positions.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div>';
-    return;
-  }
+  if(!S.positions.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div>';return;}
   el.innerHTML=S.positions.map(t=>{
     const raw=t.side==='BUY'?(t.ltp-t.entry)*t.qty:(t.entry-t.ltp)*t.qty;
     const net=raw-t.tax,pct=(net/(t.entry*t.qty)*100);
@@ -383,7 +365,7 @@ function exitTrade(id){
 
 function renderClosed(){
   const el=document.getElementById('closed-list');
-  if(!S.closed.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><h3>Koi closed trade nahi</h3><p>Jab position exit karoge yahan dikhega</p></div>';return;}
+  if(!S.closed.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><h3>Koi closed trade nahi</h3></div>';return;}
   const total=S.closed.reduce((s,t)=>s+t.netPnl,0);
   el.innerHTML='<div class="total-card"><div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px">Total Realised P&L</div>'
     +'<div style="font-size:24px;font-weight:600;font-family:var(--mono);color:'+(total>=0?'#22c55e':'#ef4444')+'">'+pnlFmt(total)+'</div>'
@@ -406,10 +388,7 @@ function updateSummary(){
 }
 
 async function refreshPrices(){
-  for(const t of S.positions){
-    const d=await getPrice(t.sym);
-    if(d)t.ltp=d.price;
-  }
+  for(const t of S.positions){const d=await getPrice(t.sym);if(d)t.ltp=d.price;}
   renderPositions();updateSummary();
 }
 
@@ -424,8 +403,6 @@ function closeModal(){
   document.querySelectorAll('#instr-segs .seg').forEach((b,i)=>{b.classList.remove('active');if(i===0)b.classList.add('active');});
   calcTax();
 }
-
-// Auto refresh every 60 seconds
 setInterval(()=>{if(S.positions.length)refreshPrices();},60000);
 </script>
 </body>
