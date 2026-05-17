@@ -11,23 +11,21 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
 .app{max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
 .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
-.logo{font-size:19px;font-weight:600;letter-spacing:-0.5px;color:var(--text)}.logo span{color:var(--accent2)}
+.logo{font-size:19px;font-weight:600;letter-spacing:-0.5px}.logo span{color:var(--accent2)}
 .live-badge{display:flex;align-items:center;gap:5px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--green);font-weight:500}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .sumbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
 .scard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);padding:12px 14px}
 .slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
-.sval{font-size:16px;font-weight:600;font-family:var(--mono);color:var(--text)}
-.sval.pos{color:var(--green)}.sval.neg{color:var(--red)}
+.sval{font-size:16px;font-weight:600;font-family:var(--mono)}.sval.pos{color:var(--green)}.sval.neg{color:var(--red)}
 .tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px}
 .tab{flex:1;padding:12px 6px;font-size:12px;font-weight:500;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;font-family:var(--font)}
 .tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
-.page{display:none;padding:12px;padding-bottom:90px}
-.page.active{display:block}
+.page{display:none;padding:12px;padding-bottom:90px}.page.active{display:block}
 .tcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:10px;overflow:hidden}
 .thead{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px 8px}
-.tsym{font-size:15px;font-weight:600;color:var(--text)}
+.tsym{font-size:15px;font-weight:600}
 .tbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:6px}
 .tbadge.buy{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
 .tbadge.sell{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
@@ -56,10 +54,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .closebtn{background:var(--bg3);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;color:var(--muted)}
 .segs{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:4px;gap:4px;margin-bottom:14px}
 .seg{flex:1;padding:8px;text-align:center;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--font)}
-.seg.active{color:#fff}
-.seg.buy-active.active{background:var(--green)}
-.seg.sell-active.active{background:var(--red)}
-.seg.instr-active.active{background:var(--accent)}
+.seg.active{color:#fff;background:var(--accent)}
+.seg.s-buy.active{background:var(--green)}
+.seg.s-sell.active{background:var(--red)}
 .flabel{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500;text-transform:uppercase;letter-spacing:0.3px}
 .finput{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);font-family:var(--mono);margin-bottom:12px;outline:none}
 .finput:focus{border-color:var(--accent)}
@@ -80,7 +77,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .search-input::placeholder{color:var(--muted)}
 .quote-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);padding:14px;margin-bottom:12px}
 .total-card{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:var(--card-r);padding:16px;margin-bottom:12px}
-.section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:8px 0;padding:0 2px}
+.section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:8px 0}
 </style>
 </head>
 <body>
@@ -102,7 +99,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
   <div id="tab-positions" class="page active"><div id="pos-list"><div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div></div></div>
   <div id="tab-markets" class="page">
-    <div class="search-wrap"><input class="search-input" id="mkt-search" placeholder="NSE symbol (e.g. INFY, TCS)" onkeydown="if(event.key==='Enter')fetchQuote()"/><button class="fetchbtn" onclick="fetchQuote()">Search</button></div>
+    <div class="search-wrap"><input class="search-input" id="mkt-search" placeholder="NSE symbol (e.g. INFY, TCS, RELIANCE)" onkeydown="if(event.key==='Enter')fetchQuote()"/><button class="fetchbtn" onclick="fetchQuote()">Search</button></div>
     <div id="quote-area"></div>
     <div class="section-label">TOP FnO STOCKS</div>
     <div id="wlist"><div class="empty" style="padding:20px"><p>⏳ Live prices load ho rahi hain...</p></div></div>
@@ -116,12 +113,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="modal-handle"></div>
     <div class="modal-title">New Paper Trade <button class="closebtn" onclick="closeModal()">✕</button></div>
     <div class="segs" id="side-segs">
-      <button class="seg buy-active active" onclick="setSide('BUY',this)">📈 BUY (Long)</button>
-      <button class="seg sell-active" onclick="setSide('SELL',this)">📉 SELL (Short)</button>
+      <button class="seg s-buy active" onclick="setSide('BUY',this)">📈 BUY (Long)</button>
+      <button class="seg s-sell" onclick="setSide('SELL',this)">📉 SELL (Short)</button>
     </div>
     <label class="flabel">Symbol (NSE)</label>
     <div style="display:flex;gap:8px;margin-bottom:4px">
-      <input class="finput" id="m-sym" placeholder="e.g. RELIANCE" style="margin:0;flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+      <input class="finput" id="m-sym" placeholder="e.g. RELIANCE, TCS, INFY" style="margin:0;flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
       <button class="fetchbtn" onclick="fetchAndFill()">Fetch Live</button>
     </div>
     <div class="fetch-status" id="fetch-status"></div>
@@ -135,9 +132,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     </div>
     <label class="flabel">Instrument Type</label>
     <div class="segs" id="instr-segs" style="margin-bottom:14px">
-      <button class="seg instr-active active" onclick="setInstr('EQ',this)">Equity</button>
-      <button class="seg instr-active" onclick="setInstr('FUT',this)">Futures</button>
-      <button class="seg instr-active" onclick="setInstr('OPT',this)">Options</button>
+      <button class="seg active" onclick="setInstr('EQ',this)">Equity</button>
+      <button class="seg" onclick="setInstr('FUT',this)">Futures</button>
+      <button class="seg" onclick="setInstr('OPT',this)">Options</button>
     </div>
     <div class="taxbox">
       <div class="taxbox-title">📊 Brokerage &amp; Tax Estimate</div>
@@ -153,27 +150,45 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <script>
+// Twelve Data API — NSE Live Prices
+const API_KEY = '490ad502d5f34257aa3da9d0c0b62f4d';
+const BASE = 'https://api.twelvedata.com';
+
 const S={capital:100000,positions:[],closed:[],realised:0,side:'BUY',instr:'EQ'};
 const fmt=n=>'₹'+Math.abs(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pnlFmt=n=>(n>=0?'+':'-')+fmt(n);
 
+// Fetch live price from Twelve Data (NSE exchange)
 async function getPrice(sym){
-  const yahooUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1d&range=1d`;
-  const proxies=[
-    `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(yahooUrl)}`
-  ];
-  for(const url of proxies){
-    try{
-      const r=await fetch(url,{signal:AbortSignal.timeout(7000)});
-      let data=await r.json();
-      if(data.contents)data=JSON.parse(data.contents);
-      const m=data.chart.result[0].meta;
-      return{price:m.regularMarketPrice,prev:m.chartPreviousClose||m.previousClose||m.regularMarketPrice,high:m.regularMarketDayHigh,low:m.regularMarketDayLow};
-    }catch(e){continue;}
-  }
-  return null;
+  try{
+    const url=`${BASE}/price?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+    const d=await r.json();
+    if(d.price){
+      // Also get quote for high/low/prev close
+      const q=await fetch(`${BASE}/quote?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`,{signal:AbortSignal.timeout(8000)});
+      const qd=await q.json();
+      return{
+        price:parseFloat(d.price),
+        prev:parseFloat(qd.previous_close||d.price),
+        high:parseFloat(qd.high||d.price),
+        low:parseFloat(qd.low||d.price),
+        name:qd.name||sym
+      };
+    }
+    return null;
+  }catch(e){return null;}
+}
+
+// Batch price fetch for watchlist
+async function getPriceBatch(symbols){
+  try{
+    const symsStr=symbols.map(s=>s+':NSE').join(',');
+    const url=`${BASE}/price?symbol=${symsStr}&apikey=${API_KEY}`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+    const d=await r.json();
+    return d;
+  }catch(e){return {};}
 }
 
 function showTab(t){
@@ -182,17 +197,20 @@ function showTab(t){
   document.getElementById('tab-'+t).classList.add('active');
   if(t==='markets')loadWatchlist();
 }
+
 function setSide(s,el){
   S.side=s;
   document.querySelectorAll('#side-segs .seg').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
+
 function setInstr(i,el){
   S.instr=i;
   document.querySelectorAll('#instr-segs .seg').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   calcTax();
 }
+
 function calcTax(){
   const ep=parseFloat(document.getElementById('m-entry').value)||0;
   const qty=parseFloat(document.getElementById('m-qty').value)||1;
@@ -211,52 +229,96 @@ function calcTax(){
   document.getElementById('t-total').textContent='₹'+total.toFixed(2);
   return total;
 }
+
 async function fetchAndFill(){
   const sym=document.getElementById('m-sym').value.trim().toUpperCase();
   if(!sym)return;
   const st=document.getElementById('fetch-status');
-  st.textContent='⏳ Fetching live price...';st.style.color='#7a7a8e';
+  st.textContent='⏳ NSE se live price fetch ho rahi hai...';
+  st.style.color='#7a7a8e';
   const d=await getPrice(sym);
   if(d){
     document.getElementById('m-entry').value=d.price.toFixed(2);
     const chg=d.price-d.prev,pct=(chg/d.prev*100).toFixed(2);
-    st.textContent='✅ Live: ₹'+d.price.toFixed(2)+' ('+(chg>=0?'+':'')+pct+'%)';
-    st.style.color='#22c55e';calcTax();
+    st.textContent='✅ Live NSE: ₹'+d.price.toFixed(2)+' ('+(chg>=0?'+':'')+pct+'%)';
+    st.style.color='#22c55e';
+    calcTax();
   }else{
-    st.textContent='⚠️ Live data nahi mila. Manually price bharo.';
-    st.style.color='#f59e0b';
+    st.textContent='❌ Symbol nahi mila. Check karo: RELIANCE, TCS, INFY, SBIN';
+    st.style.color='#ef4444';
   }
 }
+
 async function fetchQuote(){
   const sym=document.getElementById('mkt-search').value.trim().toUpperCase();
   if(!sym)return;
   const qa=document.getElementById('quote-area');
-  qa.innerHTML='<div style="color:#7a7a8e;font-size:12px;padding:8px 0">⏳ Loading...</div>';
+  qa.innerHTML='<div style="color:#7a7a8e;font-size:12px;padding:8px 0">⏳ NSE se data aa raha hai...</div>';
   const d=await getPrice(sym);
   if(d){
     const chg=d.price-d.prev,pct=(chg/d.prev*100);
-    qa.innerHTML='<div class="quote-card"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:15px;font-weight:600">'+sym+'</div><div style="font-size:26px;font-weight:600;font-family:var(--mono);margin:4px 0">₹'+d.price.toFixed(2)+'</div><div style="font-size:12px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+pct.toFixed(2)+'%)</div></div><button class="add-btn" onclick="prefillTrade(\''+sym+'\','+d.price+')">+ Add Trade</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div><div style="font-size:10px;color:var(--muted)">Day High</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#22c55e">₹'+(d.high||0).toFixed(2)+'</div></div><div><div style="font-size:10px;color:var(--muted)">Day Low</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#ef4444">₹'+(d.low||0).toFixed(2)+'</div></div></div></div>';
-  }else{qa.innerHTML='<div style="color:#ef4444;font-size:12px;padding:4px 0">❌ Data nahi mila.</div>';}
+    qa.innerHTML='<div class="quote-card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      +'<div><div style="font-size:15px;font-weight:600">'+sym+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+d.name+'</div>'
+      +'<div style="font-size:26px;font-weight:600;font-family:var(--mono);margin:4px 0">₹'+d.price.toFixed(2)+'</div>'
+      +'<div style="font-size:12px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+(chg>=0?'+':'')+pct.toFixed(2)+'%)</div>'
+      +'</div><button class="add-btn" onclick="prefillTrade(\''+sym+'\','+d.price+')">+ Add Trade</button></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
+      +'<div><div style="font-size:10px;color:var(--muted)">Day High</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#22c55e">₹'+d.high.toFixed(2)+'</div></div>'
+      +'<div><div style="font-size:10px;color:var(--muted)">Day Low</div><div style="font-size:13px;font-weight:500;font-family:var(--mono);color:#ef4444">₹'+d.low.toFixed(2)+'</div></div>'
+      +'<div><div style="font-size:10px;color:var(--muted)">Prev Close</div><div style="font-size:13px;font-weight:500;font-family:var(--mono)">₹'+d.prev.toFixed(2)+'</div></div>'
+      +'</div></div>';
+  }else{
+    qa.innerHTML='<div style="color:#ef4444;font-size:12px;padding:4px 0">❌ Symbol nahi mila. Try: RELIANCE, TCS, INFY</div>';
+  }
 }
+
 function prefillTrade(sym,price){
   document.getElementById('m-sym').value=sym;
   document.getElementById('m-entry').value=parseFloat(price).toFixed(2);
-  document.getElementById('fetch-status').textContent='✅ ₹'+parseFloat(price).toFixed(2)+' prefilled';
+  document.getElementById('fetch-status').textContent='✅ ₹'+parseFloat(price).toFixed(2)+' prefilled from NSE';
   document.getElementById('fetch-status').style.color='#22c55e';
   calcTax();showTab('positions');openModal();
 }
+
 const WATCHLIST=['RELIANCE','TCS','INFY','SBIN','ICICIBANK','WIPRO','TATAMOTORS','HDFCBANK'];
+
 async function loadWatchlist(){
   const el=document.getElementById('wlist');
-  el.innerHTML='<div class="empty" style="padding:20px"><p>⏳ Live prices load ho rahi hain...</p></div>';
-  const results=await Promise.all(WATCHLIST.map(s=>getPrice(s)));
+  el.innerHTML='<div class="empty" style="padding:20px"><p>⏳ NSE se live prices aa rahi hain...</p></div>';
+
+  // Fetch all at once using batch
+  const batch=await getPriceBatch(WATCHLIST);
+
+  // Also fetch individual quotes for prev close
+  const results=await Promise.all(WATCHLIST.map(async sym=>{
+    try{
+      const price=batch[sym+':NSE']?.price || batch[sym]?.price;
+      if(!price)return null;
+      const q=await fetch(`${BASE}/quote?symbol=${sym}&exchange=NSE&apikey=${API_KEY}`,{signal:AbortSignal.timeout(6000)});
+      const qd=await q.json();
+      return{price:parseFloat(price),prev:parseFloat(qd.previous_close||price),high:parseFloat(qd.high||price),low:parseFloat(qd.low||price)};
+    }catch{return null;}
+  }));
+
   el.innerHTML=WATCHLIST.map((sym,i)=>{
     const d=results[i];
-    if(!d)return '<div class="wrow"><div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE FnO</div></div><div style="font-size:11px;color:var(--muted)">Unavailable</div><button class="add-btn" onclick="prefillTrade(\''+sym+'\',0)">+ Add</button></div>';
+    if(!d)return '<div class="wrow"><div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE</div></div><div style="font-size:11px;color:var(--muted)">Loading...</div><button class="add-btn" onclick="loadSingle(\''+sym+'\')">Load</button></div>';
     const chg=d.price-d.prev,pct=(chg/d.prev*100);
-    return '<div class="wrow"><div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE FnO</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:600;font-family:var(--mono)">₹'+d.price.toFixed(2)+'</div><div style="font-size:11px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+pct.toFixed(2)+'%)</div></div><button class="add-btn" style="margin-left:10px" onclick="prefillTrade(\''+sym+'\','+d.price+')">+</button></div>';
+    return '<div class="wrow">'
+      +'<div><div style="font-size:14px;font-weight:600">'+sym+'</div><div style="font-size:10px;color:var(--muted)">NSE FnO</div></div>'
+      +'<div style="text-align:right"><div style="font-size:14px;font-weight:600;font-family:var(--mono)">₹'+d.price.toFixed(2)+'</div>'
+      +'<div style="font-size:11px;color:'+(chg>=0?'#22c55e':'#ef4444')+';font-family:var(--mono)">'+(chg>=0?'+':'')+chg.toFixed(2)+' ('+pct.toFixed(2)+'%)</div></div>'
+      +'<button class="add-btn" style="margin-left:10px" onclick="prefillTrade(\''+sym+'\','+d.price+')">+</button></div>';
   }).join('');
 }
+
+async function loadSingle(sym){
+  const d=await getPrice(sym);
+  if(d)prefillTrade(sym,d.price);
+}
+
 function addTrade(){
   const sym=document.getElementById('m-sym').value.trim().toUpperCase();
   const entry=parseFloat(document.getElementById('m-entry').value);
@@ -269,20 +331,37 @@ function addTrade(){
   closeModal();renderPositions();updateSummary();
   setTimeout(refreshPrices,500);
 }
+
 function renderPositions(){
   const el=document.getElementById('pos-list');
-  if(!S.positions.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div>';return;}
+  if(!S.positions.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div>';
+    return;
+  }
   el.innerHTML=S.positions.map(t=>{
     const raw=t.side==='BUY'?(t.ltp-t.entry)*t.qty:(t.entry-t.ltp)*t.qty;
     const net=raw-t.tax,pct=(net/(t.entry*t.qty)*100);
     const chgPct=((t.ltp-t.entry)/t.entry*100).toFixed(2);
     let chip='<span class="chip chip-open">Open</span>';
-    if(t.sl&&t.ltp<=t.sl)chip='<span class="chip chip-sl">SL Hit!</span>';
-    if(t.tgt&&t.ltp>=t.tgt)chip='<span class="chip chip-tgt">Target!</span>';
+    if(t.sl&&t.ltp<=t.sl)chip='<span class="chip chip-sl">⚠️ SL Hit!</span>';
+    if(t.tgt&&t.ltp>=t.tgt)chip='<span class="chip chip-tgt">🎯 Target!</span>';
     const rr=t.sl&&t.tgt&&t.entry!==t.sl?Math.abs((t.tgt-t.entry)/(t.entry-t.sl)).toFixed(1)+':1':'—';
-    return '<div class="tcard"><div class="thead"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="tsym">'+t.sym+'</span><span class="tbadge '+t.side.toLowerCase()+'">'+t.side+'</span>'+chip+'</div><div><div class="tltp" style="color:'+(t.ltp>=t.entry?'#22c55e':'#ef4444')+'">₹'+t.ltp.toFixed(2)+'</div><div style="font-size:10px;text-align:right;color:'+(t.ltp>=t.entry?'#22c55e':'#ef4444')+'">'+(t.ltp>=t.entry?'▲':'▼')+' '+Math.abs(chgPct)+'%</div></div></div><div class="tgrid"><div class="tcell"><div class="clabel">ENTRY</div><div class="cval">₹'+t.entry.toFixed(2)+'</div></div><div class="tcell"><div class="clabel" style="color:#ef4444">STOP LOSS</div><div class="cval" style="color:#ef4444">'+(t.sl?'₹'+t.sl:'—')+'</div></div><div class="tcell"><div class="clabel" style="color:#22c55e">TARGET</div><div class="cval" style="color:#22c55e">'+(t.tgt?'₹'+t.tgt:'—')+'</div></div></div><div class="tgrid"><div class="tcell"><div class="clabel">QTY</div><div class="cval">'+t.qty+'</div></div><div class="tcell"><div class="clabel">TAXES</div><div class="cval" style="color:#ef4444">-₹'+t.tax.toFixed(2)+'</div></div><div class="tcell"><div class="clabel">RISK:REWARD</div><div class="cval">'+rr+'</div></div></div><div class="tfoot"><div><div class="pnl '+(net>=0?'pos':'neg')+'">Net P&L: '+pnlFmt(net)+'</div><div style="font-size:10px;color:var(--muted);margin-top:2px">'+(pct>=0?'+':'')+pct.toFixed(2)+'% · '+t.instr+' · '+t.time+'</div></div><button class="exitbtn" onclick="exitTrade('+t.id+')">Exit Trade</button></div></div>';
+    return '<div class="tcard">'
+      +'<div class="thead"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="tsym">'+t.sym+'</span><span class="tbadge '+t.side.toLowerCase()+'">'+t.side+'</span>'+chip+'</div>'
+      +'<div><div class="tltp" style="color:'+(t.ltp>=t.entry?'#22c55e':'#ef4444')+'">₹'+t.ltp.toFixed(2)+'</div>'
+      +'<div style="font-size:10px;text-align:right;color:'+(t.ltp>=t.entry?'#22c55e':'#ef4444')+'">'+(t.ltp>=t.entry?'▲':'▼')+' '+Math.abs(chgPct)+'%</div></div></div>'
+      +'<div class="tgrid"><div class="tcell"><div class="clabel">ENTRY</div><div class="cval">₹'+t.entry.toFixed(2)+'</div></div>'
+      +'<div class="tcell"><div class="clabel" style="color:#ef4444">STOP LOSS</div><div class="cval" style="color:#ef4444">'+(t.sl?'₹'+t.sl:'—')+'</div></div>'
+      +'<div class="tcell"><div class="clabel" style="color:#22c55e">TARGET</div><div class="cval" style="color:#22c55e">'+(t.tgt?'₹'+t.tgt:'—')+'</div></div></div>'
+      +'<div class="tgrid"><div class="tcell"><div class="clabel">QTY</div><div class="cval">'+t.qty+'</div></div>'
+      +'<div class="tcell"><div class="clabel">TAXES</div><div class="cval" style="color:#ef4444">-₹'+t.tax.toFixed(2)+'</div></div>'
+      +'<div class="tcell"><div class="clabel">RISK:REWARD</div><div class="cval">'+rr+'</div></div></div>'
+      +'<div class="tfoot"><div><div class="pnl '+(net>=0?'pos':'neg')+'">Net P&L: '+pnlFmt(net)+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'+(pct>=0?'+':'')+pct.toFixed(2)+'% · '+t.instr+' · '+t.time+'</div></div>'
+      +'<button class="exitbtn" onclick="exitTrade('+t.id+')">Exit Trade</button></div></div>';
   }).join('');
 }
+
 function exitTrade(id){
   const t=S.positions.find(p=>p.id===id);if(!t)return;
   const ep=parseFloat(prompt(t.sym+' exit price?\nCurrent LTP: ₹'+t.ltp.toFixed(2),t.ltp.toFixed(2)));
@@ -299,15 +378,25 @@ function exitTrade(id){
   S.positions=S.positions.filter(p=>p.id!==id);
   S.closed.unshift(t);S.capital+=net;S.realised+=net;
   renderPositions();renderClosed();updateSummary();
-  alert('Trade Closed!\nNet P&L: '+pnlFmt(net)+'\nTotal Taxes: ₹'+(t.tax+exitTax).toFixed(2));
+  alert('Trade Closed! ✅\nNet P&L: '+pnlFmt(net)+'\nTotal Taxes: ₹'+(t.tax+exitTax).toFixed(2));
 }
+
 function renderClosed(){
   const el=document.getElementById('closed-list');
   if(!S.closed.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><h3>Koi closed trade nahi</h3><p>Jab position exit karoge yahan dikhega</p></div>';return;}
   const total=S.closed.reduce((s,t)=>s+t.netPnl,0);
-  el.innerHTML='<div class="total-card"><div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px">Total Realised P&L</div><div style="font-size:24px;font-weight:600;font-family:var(--mono);color:'+(total>=0?'#22c55e':'#ef4444')+'">'+pnlFmt(total)+'</div><div style="font-size:11px;color:var(--muted);margin-top:4px">'+S.closed.length+' trade'+(S.closed.length>1?'s':'')+' closed</div></div>'+
-  S.closed.map(t=>'<div class="tcard"><div class="thead"><div style="display:flex;align-items:center;gap:4px"><span class="tsym">'+t.sym+'</span><span class="tbadge '+t.side.toLowerCase()+'">'+t.side+'</span></div><div class="pnl '+(t.netPnl>=0?'pos':'neg')+'" style="font-size:15px">'+pnlFmt(t.netPnl)+'</div></div><div class="tgrid"><div class="tcell"><div class="clabel">ENTRY</div><div class="cval">₹'+t.entry.toFixed(2)+'</div></div><div class="tcell"><div class="clabel">EXIT</div><div class="cval">₹'+t.closePrice.toFixed(2)+'</div></div><div class="tcell"><div class="clabel">ALL TAXES</div><div class="cval" style="color:#ef4444">-₹'+(t.tax+(t.exitTax||0)).toFixed(2)+'</div></div></div></div>').join('');
+  el.innerHTML='<div class="total-card"><div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px">Total Realised P&L</div>'
+    +'<div style="font-size:24px;font-weight:600;font-family:var(--mono);color:'+(total>=0?'#22c55e':'#ef4444')+'">'+pnlFmt(total)+'</div>'
+    +'<div style="font-size:11px;color:var(--muted);margin-top:4px">'+S.closed.length+' trade'+(S.closed.length>1?'s':'')+' closed</div></div>'
+    +S.closed.map(t=>'<div class="tcard">'
+      +'<div class="thead"><div style="display:flex;align-items:center;gap:4px"><span class="tsym">'+t.sym+'</span><span class="tbadge '+t.side.toLowerCase()+'">'+t.side+'</span></div>'
+      +'<div class="pnl '+(t.netPnl>=0?'pos':'neg')+'" style="font-size:15px">'+pnlFmt(t.netPnl)+'</div></div>'
+      +'<div class="tgrid"><div class="tcell"><div class="clabel">ENTRY</div><div class="cval">₹'+t.entry.toFixed(2)+'</div></div>'
+      +'<div class="tcell"><div class="clabel">EXIT</div><div class="cval">₹'+t.closePrice.toFixed(2)+'</div></div>'
+      +'<div class="tcell"><div class="clabel">ALL TAXES</div><div class="cval" style="color:#ef4444">-₹'+(t.tax+(t.exitTax||0)).toFixed(2)+'</div></div></div></div>'
+    ).join('');
 }
+
 function updateSummary(){
   const op=S.positions.reduce((s,t)=>{const r=t.side==='BUY'?(t.ltp-t.entry)*t.qty:(t.entry-t.ltp)*t.qty;return s+r-t.tax;},0);
   document.getElementById('s-cap').textContent=fmt(S.capital);
@@ -315,11 +404,15 @@ function updateSummary(){
   const re=document.getElementById('s-real');re.textContent=pnlFmt(S.realised);re.className='sval '+(S.realised>0?'pos':S.realised<0?'neg':'');
   document.getElementById('s-cnt').textContent=S.positions.length+S.closed.length;
 }
+
 async function refreshPrices(){
-  const syms=[...new Set(S.positions.map(p=>p.sym))];
-  for(const sym of syms){const d=await getPrice(sym);if(d)S.positions.forEach(p=>{if(p.sym===sym)p.ltp=d.price;});}
+  for(const t of S.positions){
+    const d=await getPrice(t.sym);
+    if(d)t.ltp=d.price;
+  }
   renderPositions();updateSummary();
 }
+
 function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){
   document.getElementById('modal').classList.remove('open');
@@ -331,6 +424,8 @@ function closeModal(){
   document.querySelectorAll('#instr-segs .seg').forEach((b,i)=>{b.classList.remove('active');if(i===0)b.classList.add('active');});
   calcTax();
 }
+
+// Auto refresh every 60 seconds
 setInterval(()=>{if(S.positions.length)refreshPrices();},60000);
 </script>
 </body>
