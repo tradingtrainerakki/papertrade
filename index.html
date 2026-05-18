@@ -78,6 +78,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .quote-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);padding:14px;margin-bottom:12px}
 .total-card{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:var(--card-r);padding:16px;margin-bottom:12px}
 .section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:8px 0}
+.j-date-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 6px;display:flex;justify-content:space-between;align-items:center}
+.j-date-pnl{font-size:12px;font-weight:600;font-family:var(--mono)}
+.jcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:8px;overflow:hidden}
+.jcard-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 6px}
+.jcard-sym{font-size:14px;font-weight:600}
+.jcard-badges{display:flex;gap:4px;align-items:center}
+.jcard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
+.jcard-foot{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:rgba(0,0,0,0.2);border-top:1px solid var(--border)}
+.jchip-open{background:rgba(245,158,11,0.15);color:var(--yellow);border:1px solid rgba(245,158,11,0.3);font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.jchip-closed{background:rgba(99,102,241,0.15);color:var(--accent2);border:1px solid rgba(99,102,241,0.3);font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-r);padding:12px 14px}
+.sum-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px}
+.sum-val{font-size:17px;font-weight:600;font-family:var(--mono)}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-date{font-size:10px;color:var(--muted);min-width:54px}
+.bar-track{flex:1;height:16px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.4s}
+.bar-label{font-size:11px;font-weight:600;font-family:var(--mono);min-width:70px;text-align:right}
+.j-filter{display:flex;gap:6px;margin-bottom:12px}
+.j-filter button{flex:1;padding:7px 4px;font-size:11px;font-weight:500;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:var(--font)}
+.j-filter button.active{background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.4);color:var(--accent2)}
+.j-subtabs{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px;margin-bottom:12px}
+.j-subtab{flex:1;padding:7px;text-align:center;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--font)}
+.j-subtab.active{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -96,6 +121,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <button class="tab active" onclick="showTab('positions')">Positions</button>
     <button class="tab" onclick="showTab('markets')">Markets</button>
     <button class="tab" onclick="showTab('closed')">Closed</button>
+    <button class="tab" onclick="showTab('journal')">📓 Journal</button>
   </div>
   <div id="tab-positions" class="page active"><div id="pos-list"><div class="empty"><div class="empty-icon">📊</div><h3>Koi position nahi hai</h3><p>Neeche + button dabaao aur apna pehla paper trade lo!</p></div></div></div>
   <div id="tab-markets" class="page">
@@ -105,6 +131,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div id="wlist"><div class="empty" style="padding:20px"><p>⏳ Live prices load ho rahi hain...</p></div></div>
   </div>
   <div id="tab-closed" class="page"><div id="closed-list"><div class="empty"><div class="empty-icon">📋</div><h3>Koi closed trade nahi</h3><p>Jab position exit karoge yahan dikhega</p></div></div></div>
+  <div id="tab-journal" class="page">
+    <div class="j-subtabs">
+      <button class="j-subtab active" onclick="switchJournalTab('trades',this)">All Trades</button>
+      <button class="j-subtab" onclick="switchJournalTab('daily',this)">Daily P&L</button>
+    </div>
+    <div id="journal-trades">
+      <div class="j-filter" id="j-filter">
+        <button class="active" onclick="setJFilter('all',this)">All</button>
+        <button onclick="setJFilter('open',this)">Open</button>
+        <button onclick="setJFilter('closed',this)">Closed</button>
+        <button onclick="setJFilter('BUY',this)">BUY</button>
+        <button onclick="setJFilter('SELL',this)">SELL</button>
+      </div>
+      <div id="j-list"><div class="empty"><div class="empty-icon">📓</div><h3>Journal empty hai</h3><p>Trade lo — automatically yahaan record hoga!</p></div></div>
+    </div>
+    <div id="journal-daily" style="display:none">
+      <div class="sum-grid" id="j-summary"></div>
+      <div class="section-label" style="margin-top:4px">Day-wise P&L</div>
+      <div id="j-bars"></div>
+    </div>
+  </div>
   <div class="fab-wrap"><button class="fab" onclick="openModal()">+</button></div>
 </div>
 
@@ -211,10 +258,12 @@ async function getPrice(sym){
 }
 
 function showTab(t){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['positions','markets','closed'][i]===t));
+  const tabNames=['positions','markets','closed','journal'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',tabNames[i]===t));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   if(t==='markets') loadWatchlist();
+  if(t==='journal') renderJournal();
 }
 function setSide(s,el){S.side=s;document.querySelectorAll('#side-segs .seg').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 function setInstr(i,el){S.instr=i;document.querySelectorAll('#instr-segs .seg').forEach(b=>b.classList.remove('active'));el.classList.add('active');calcTax();}
@@ -313,6 +362,7 @@ function addTrade(){
   if(!sym||!entry){alert('Symbol aur Entry Price zaroori hai!');return;}
   const tax=calcTax()||0;
   S.positions.push({id:Date.now(),sym,side:S.side,instr:S.instr,entry,qty,sl,tgt,tax,ltp:entry,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})});
+  journalLog({id:S.positions[S.positions.length-1].id,sym,side:S.side,instr:S.instr,entry,qty,sl,tgt,entryTime:new Date().toISOString(),status:'open'});
   closeModal();renderPositions();updateSummary();
   setTimeout(refreshPrices,500);
 }
@@ -357,6 +407,7 @@ function exitTrade(id){
   const raw=t.side==='BUY'?(ep-t.entry)*t.qty:(t.entry-ep)*t.qty;
   const net=raw-t.tax-exitTax;
   t.closePrice=ep;t.netPnl=net;t.exitTax=exitTax;
+  journalClose(t.id,ep,net,new Date().toISOString());
   S.positions=S.positions.filter(p=>p.id!==id);
   S.closed.unshift(t);S.capital+=net;S.realised+=net;
   renderPositions();renderClosed();updateSummary();
@@ -403,6 +454,143 @@ function closeModal(){
   document.querySelectorAll('#instr-segs .seg').forEach((b,i)=>{b.classList.remove('active');if(i===0)b.classList.add('active');});
   calcTax();
 }
+// ── TRADE JOURNAL ──────────────────────────────────────────────
+const J_KEY='pt_journal_v1';
+let jFilter='all';
+let jTab='trades';
+
+function jLoad(){try{return JSON.parse(localStorage.getItem(J_KEY)||'[]');}catch(e){return[];}}
+function jSave(data){localStorage.setItem(J_KEY,JSON.stringify(data));}
+
+function journalLog(t){
+  const data=jLoad();
+  data.unshift({id:t.id,sym:t.sym,side:t.side,instr:t.instr,entry:t.entry,qty:t.qty,sl:t.sl||null,tgt:t.tgt||null,entryTime:t.entryTime,exitPrice:null,exitTime:null,status:'open',pnl:null});
+  jSave(data);
+}
+
+function journalClose(id,exitPrice,pnl,exitTime){
+  const data=jLoad();
+  const idx=data.findIndex(t=>t.id===id);
+  if(idx===-1)return;
+  data[idx]={...data[idx],exitPrice,exitTime,status:'closed',pnl:parseFloat(pnl.toFixed(2))};
+  jSave(data);
+}
+
+function setJFilter(f,el){
+  jFilter=f;
+  document.querySelectorAll('#j-filter button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderJList();
+}
+
+function switchJournalTab(t,el){
+  jTab=t;
+  document.querySelectorAll('.j-subtab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('journal-trades').style.display=t==='trades'?'block':'none';
+  document.getElementById('journal-daily').style.display=t==='daily'?'block':'none';
+  if(t==='daily') renderJDaily();
+}
+
+function renderJournal(){
+  renderJList();
+  if(jTab==='daily') renderJDaily();
+}
+
+function renderJList(){
+  const all=jLoad();
+  let data=all;
+  if(jFilter==='open') data=all.filter(t=>t.status==='open');
+  else if(jFilter==='closed') data=all.filter(t=>t.status==='closed');
+  else if(jFilter==='BUY') data=all.filter(t=>t.side==='BUY');
+  else if(jFilter==='SELL') data=all.filter(t=>t.side==='SELL');
+
+  const el=document.getElementById('j-list');
+  if(!data.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📓</div><h3>Koi trade nahi mila</h3><p>Trade lo — automatically yahaan record hoga!</p></div>';
+    return;
+  }
+
+  const byDate={};
+  data.forEach(t=>{const d=t.entryTime.split('T')[0];if(!byDate[d])byDate[d]=[];byDate[d].push(t);});
+
+  let html='';
+  Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
+    const dayTrades=byDate[date];
+    const dayPnl=dayTrades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+    const hasClosed=dayTrades.some(t=>t.pnl!==null);
+    const pnlColor=dayPnl>=0?'var(--green)':'var(--red)';
+    const displayDate=new Date(date).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    html+=`<div class="j-date-label"><span>${displayDate}</span>${hasClosed?`<span class="j-date-pnl" style="color:${pnlColor}">${dayPnl>=0?'+':'-'}₹${Math.abs(dayPnl).toFixed(0)}</span>`:'<span class="j-date-pnl" style="color:var(--yellow)">Open</span>'}</div>`;
+
+    dayTrades.forEach(t=>{
+      const entryT=t.entryTime.split('T')[1].slice(0,5);
+      const exitT=t.exitTime?t.exitTime.split('T')[1].slice(0,5):null;
+      const pnlHtml=t.pnl!==null?`<span class="pnl ${t.pnl>=0?'pos':'neg'}">${t.pnl>=0?'+':'-'}₹${Math.abs(t.pnl).toFixed(2)}</span>`:`<span style="color:var(--yellow);font-family:var(--mono);font-size:13px;font-weight:600">Running…</span>`;
+      const statusChip=t.status==='open'?'<span class="jchip-open">OPEN</span>':'<span class="jchip-closed">CLOSED</span>';
+      const rr=(t.sl&&t.tgt&&t.entry!==t.sl)?Math.abs((t.tgt-t.entry)/(t.entry-t.sl)).toFixed(1)+':1':'—';
+      html+=`<div class="jcard">
+        <div class="jcard-head">
+          <div class="jcard-sym">${t.sym}</div>
+          <div class="jcard-badges"><span class="tbadge ${t.side.toLowerCase()}">${t.side}</span>${statusChip}</div>
+        </div>
+        <div class="jcard-grid">
+          <div class="tcell"><div class="clabel">ENTRY</div><div class="cval">₹${t.entry.toFixed(2)}</div><div style="font-size:9px;color:var(--muted)">${entryT}</div></div>
+          <div class="tcell"><div class="clabel">EXIT</div><div class="cval">${t.exitPrice?'₹'+t.exitPrice.toFixed(2):'—'}</div><div style="font-size:9px;color:var(--muted)">${exitT||'—'}</div></div>
+          <div class="tcell"><div class="clabel">QTY / R:R</div><div class="cval">${t.qty}</div><div style="font-size:9px;color:var(--muted)">${rr}</div></div>
+        </div>
+        <div class="jcard-grid">
+          <div class="tcell"><div class="clabel" style="color:var(--red)">SL</div><div class="cval" style="color:var(--red)">${t.sl?'₹'+t.sl:'—'}</div></div>
+          <div class="tcell"><div class="clabel" style="color:var(--green)">TARGET</div><div class="cval" style="color:var(--green)">${t.tgt?'₹'+t.tgt:'—'}</div></div>
+          <div class="tcell"><div class="clabel">TYPE</div><div class="cval">${t.instr}</div></div>
+        </div>
+        <div class="jcard-foot">${pnlHtml}</div>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+
+function renderJDaily(){
+  const all=jLoad();
+  const closed=all.filter(t=>t.status==='closed');
+  const totalPnl=closed.reduce((s,t)=>s+t.pnl,0);
+  const wins=closed.filter(t=>t.pnl>0).length;
+  const losses=closed.filter(t=>t.pnl<0).length;
+  const winRate=closed.length?Math.round(wins/closed.length*100):0;
+  const best=closed.length?Math.max(...closed.map(t=>t.pnl)):0;
+  const worst=closed.length?Math.min(...closed.map(t=>t.pnl)):0;
+  const avgWin=wins?closed.filter(t=>t.pnl>0).reduce((s,t)=>s+t.pnl,0)/wins:0;
+  const avgLoss=losses?closed.filter(t=>t.pnl<0).reduce((s,t)=>s+t.pnl,0)/losses:0;
+
+  const pnlColor=totalPnl>=0?'var(--green)':'var(--red)';
+  document.getElementById('j-summary').innerHTML=`
+    <div class="sum-card"><div class="sum-label">Total Realised P&L</div><div class="sum-val" style="color:${pnlColor}">${totalPnl>=0?'+':'-'}₹${Math.abs(totalPnl).toFixed(2)}</div></div>
+    <div class="sum-card"><div class="sum-label">Win Rate</div><div class="sum-val">${winRate}%</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${wins}W / ${losses}L</div></div>
+    <div class="sum-card"><div class="sum-label">Best Trade</div><div class="sum-val" style="color:var(--green)">${best>0?'+₹'+best.toFixed(2):'—'}</div></div>
+    <div class="sum-card"><div class="sum-label">Avg Win / Loss</div><div class="sum-val" style="font-size:13px">${avgWin?'+₹'+avgWin.toFixed(0):'—'} / ${avgLoss?'-₹'+Math.abs(avgLoss).toFixed(0):'—'}</div></div>
+    <div class="sum-card"><div class="sum-label">Total Trades</div><div class="sum-val">${all.length}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${closed.length} closed</div></div>
+    <div class="sum-card"><div class="sum-label">Worst Trade</div><div class="sum-val" style="color:var(--red)">${worst<0?'-₹'+Math.abs(worst).toFixed(2):'—'}</div></div>`;
+
+  const byDate={};
+  closed.forEach(t=>{const d=t.entryTime.split('T')[0];if(!byDate[d])byDate[d]=0;byDate[d]+=t.pnl;});
+  const dates=Object.keys(byDate).sort();
+  if(!dates.length){document.getElementById('j-bars').innerHTML='<div class="empty" style="padding:20px"><p>Closed trades ke baad yahaan chart dikhega</p></div>';return;}
+  const maxAbs=Math.max(...dates.map(d=>Math.abs(byDate[d])),1);
+
+  document.getElementById('j-bars').innerHTML=dates.reverse().map(d=>{
+    const v=byDate[d];
+    const pct=Math.round(Math.abs(v)/maxAbs*100);
+    const color=v>=0?'var(--green)':'var(--red)';
+    const dispDate=new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    return `<div class="bar-row">
+      <span class="bar-date">${dispDate}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="bar-label" style="color:${color}">${v>=0?'+':'-'}₹${Math.abs(v).toFixed(0)}</span>
+    </div>`;
+  }).join('');
+}
+// ── END JOURNAL ─────────────────────────────────────────────────
 setInterval(()=>{if(S.positions.length)refreshPrices();},60000);
 </script>
 </body>
