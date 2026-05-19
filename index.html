@@ -197,9 +197,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <script>
-const S={capital:100000,positions:[],closed:[],realised:0,side:'BUY',instr:'EQ'};
 const fmt=n=>'₹'+Math.abs(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pnlFmt=n=>(n>=0?'+':'-')+fmt(n);
+
+const S={capital:500000,positions:[],closed:[],realised:0,side:'BUY',instr:'EQ'};
+
+const S_KEY='pt_state_v1';
+function saveState(){
+  try{localStorage.setItem(S_KEY,JSON.stringify({capital:S.capital,positions:S.positions,closed:S.closed,realised:S.realised}));}catch(e){}
+}
+function loadState(){
+  try{
+    const d=JSON.parse(localStorage.getItem(S_KEY)||'null');
+    if(d){S.capital=d.capital||500000;S.positions=d.positions||[];S.closed=d.closed||[];S.realised=d.realised||0;}
+  }catch(e){}
+}
 
 // Stooq API — Free, No key needed, supports NSE (.NS suffix)
 async function getPrice(sym){
@@ -363,6 +375,7 @@ function addTrade(){
   const tax=calcTax()||0;
   S.positions.push({id:Date.now(),sym,side:S.side,instr:S.instr,entry,qty,sl,tgt,tax,ltp:entry,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})});
   journalLog({id:S.positions[S.positions.length-1].id,sym,side:S.side,instr:S.instr,entry,qty,sl,tgt,entryTime:new Date().toISOString(),status:'open'});
+  saveState();
   closeModal();renderPositions();updateSummary();
   setTimeout(refreshPrices,500);
 }
@@ -410,6 +423,7 @@ function exitTrade(id){
   journalClose(t.id,ep,net,new Date().toISOString());
   S.positions=S.positions.filter(p=>p.id!==id);
   S.closed.unshift(t);S.capital+=net;S.realised+=net;
+  saveState();
   renderPositions();renderClosed();updateSummary();
   alert('Trade Closed! ✅\nNet P&L: '+pnlFmt(net)+'\nTotal Taxes: ₹'+(t.tax+exitTax).toFixed(2));
 }
@@ -440,6 +454,7 @@ function updateSummary(){
 
 async function refreshPrices(){
   for(const t of S.positions){const d=await getPrice(t.sym);if(d)t.ltp=d.price;}
+  saveState();
   renderPositions();updateSummary();
 }
 
@@ -592,6 +607,13 @@ function renderJDaily(){
 }
 // ── END JOURNAL ─────────────────────────────────────────────────
 setInterval(()=>{if(S.positions.length)refreshPrices();},60000);
+
+// Page load pe state restore karo
+loadState();
+renderPositions();
+renderClosed();
+updateSummary();
+setTimeout(()=>{if(S.positions.length)refreshPrices();},1000);
 </script>
 </body>
 </html>
