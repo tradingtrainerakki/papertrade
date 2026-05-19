@@ -211,6 +211,23 @@ function loadState(){
     const d=JSON.parse(localStorage.getItem(S_KEY)||'null');
     if(d){S.capital=d.capital||500000;S.positions=d.positions||[];S.closed=d.closed||[];S.realised=d.realised||0;}
   }catch(e){}
+
+  // Auto-recovery: agar S.positions empty hai lekin journal mein open trades hain
+  if(S.positions.length===0){
+    try{
+      const journal=JSON.parse(localStorage.getItem('pt_journal_v1')||'[]');
+      const openInJournal=journal.filter(t=>t.status==='open');
+      if(openInJournal.length>0){
+        S.positions=openInJournal.map(t=>({
+          id:t.id,sym:t.sym,side:t.side,instr:t.instr,
+          entry:t.entry,qty:t.qty,sl:t.sl,tgt:t.tgt,
+          tax:0,ltp:t.entry,
+          time:new Date(t.entryTime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})
+        }));
+        saveState();
+      }
+    }catch(e){}
+  }
 }
 
 // Stooq API — Free, No key needed, supports NSE (.NS suffix)
